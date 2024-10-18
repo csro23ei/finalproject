@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class Controller {
     @GetMapping
     public String getIndex() {
-        return "{'messages': 'Hello world 2'}";
+        return "{'messages': 'Hello world 4'}";
     }
 
 }
