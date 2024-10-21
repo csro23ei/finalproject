@@ -29,7 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public void logoutUser(@RequestBody User user) {
-
+    public ResponseEntity<String> logoutUser(@RequestBody User user) {
+        userService.logoutUser(user.getUsername());
+        return ResponseEntity.ok("User logged out successfully");
     }
 }
