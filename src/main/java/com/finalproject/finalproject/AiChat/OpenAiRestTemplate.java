@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class OpenAiRestTemplate {
 
-    @Value("${openai.api.key}")
+    @Value("${secret.key}")
     private String apiKey;
 
     @Bean
