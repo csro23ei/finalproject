@@ -14,6 +14,6 @@ public class Controller {
     // Combine both messages into one method
     @GetMapping("/")
     public String getIndexAndKey() {
-        return "{'messages': 'Hello world 11', 'nonsecretkey': '" + nonsecretkey + "'}";
+        return "{'messages': 'deta är via github desk', 'nonsecretkey': '" + nonsecretkey + "'}";
     }
 }

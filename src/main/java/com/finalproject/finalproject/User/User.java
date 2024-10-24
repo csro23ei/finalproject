@@ -2,6 +2,7 @@ package com.finalproject.finalproject.User;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.List;
 
 @Document(collection = "Users")
 public class User {
@@ -11,6 +12,7 @@ public class User {
     private String username;
     private String password;
     private boolean loggedIn;
+    private List<String> friends; // List of friend IDs
 
     // Constructors
     public User() {
@@ -53,5 +55,23 @@ public class User {
 
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
+    }
+
+    public List<String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriend(String friendId) {
+        if (!this.friends.contains(friendId)) {
+            this.friends.add(friendId);
+        }
+    }
+
+    public void removeFriend(String friendId) {
+        this.friends.remove(friendId);
     }
 }

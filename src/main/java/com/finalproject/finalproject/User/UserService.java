@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -22,8 +24,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
-        // New user registration
-        user.setLoggedIn(false); // New users are not logged in by default
+        user.setLoggedIn(false);
         mongoTemplate.save(user);
         return ResponseEntity.ok(user);
     }
@@ -33,14 +34,11 @@ public class UserService {
         User existingUser = mongoTemplate.findOne(query, User.class);
 
         if (existingUser != null && !existingUser.isLoggedIn()) {
-            // Set the user as logged in
             existingUser.setLoggedIn(true);
-            mongoTemplate.save(existingUser); // Update the loggedIn status in the database
+            mongoTemplate.save(existingUser);
             return existingUser;
         }
-
-        // User is either logged in already or doesn't exist
-        return null; // Return null on failure
+        return null;
     }
 
     public void logoutUser(String username) {
@@ -48,9 +46,33 @@ public class UserService {
         User existingUser = mongoTemplate.findOne(query, User.class);
 
         if (existingUser != null && existingUser.isLoggedIn()) {
-            // Set the user as logged out
             existingUser.setLoggedIn(false);
-            mongoTemplate.save(existingUser); // Update the loggedIn status in the database
+            mongoTemplate.save(existingUser);
         }
+    }
+
+    public void addFriend(String username, String friendUsername) {
+        User user = mongoTemplate.findOne(Query.query(Criteria.where("username").is(username)), User.class);
+        User friend = mongoTemplate.findOne(Query.query(Criteria.where("username").is(friendUsername)), User.class);
+
+        if (user != null && friend != null && !user.getFriends().contains(friend.getId())) {
+            user.addFriend(friend.getId());
+            mongoTemplate.save(user);
+        }
+    }
+
+    public void removeFriend(String username, String friendUsername) {
+        User user = mongoTemplate.findOne(Query.query(Criteria.where("username").is(username)), User.class);
+        User friend = mongoTemplate.findOne(Query.query(Criteria.where("username").is(friendUsername)), User.class);
+
+        if (user != null && friend != null && user.getFriends().contains(friend.getId())) {
+            user.removeFriend(friend.getId());
+            mongoTemplate.save(user);
+        }
+    }
+
+    public List<User> searchUsers(String query) {
+        Query searchQuery = Query.query(Criteria.where("username").regex(query, "i"));
+        return mongoTemplate.find(searchQuery, User.class);
     }
 }
