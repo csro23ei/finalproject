@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = { "http://localhost:5173", "https://coral-app-sym8r.ondigitalocean.app" })
 public class ChatController {
 
     @Autowired
