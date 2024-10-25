@@ -13,6 +13,6 @@ public class Controller {
     // Combine both messages into one method
     @GetMapping("/")
     public String getIndexAndKey() {
-        return "{'messages': 'updatering 27', 'nonsecretkey': '" + nonsecretkey + "'}";
+        return "{'messages': 'updatering 28', 'nonsecretkey': '" + nonsecretkey + "'} Nu har jag tester för logg in";
     }
 }
