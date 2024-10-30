@@ -2,6 +2,7 @@ package com.finalproject.finalproject.User;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "Users")
@@ -16,12 +17,14 @@ public class User {
 
     // Constructors
     public User() {
+        this.friends = new ArrayList<>(); // Initialize friends list
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.loggedIn = false;
+        this.friends = new ArrayList<>(); // Initialize friends list
     }
 
     // Getters and Setters

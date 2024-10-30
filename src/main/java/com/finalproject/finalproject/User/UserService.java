@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class UserService {
         }
 
         user.setLoggedIn(false);
+        user.setFriends(new ArrayList<>()); // Initialize friends list
         mongoTemplate.save(user);
         return ResponseEntity.ok(user);
     }
@@ -55,9 +57,23 @@ public class UserService {
         User user = mongoTemplate.findOne(Query.query(Criteria.where("username").is(username)), User.class);
         User friend = mongoTemplate.findOne(Query.query(Criteria.where("username").is(friendUsername)), User.class);
 
-        if (user != null && friend != null && !user.getFriends().contains(friend.getId())) {
-            user.addFriend(friend.getId());
-            mongoTemplate.save(user);
+        if (user != null && friend != null) {
+            // Initialize friends list if it's null
+            if (user.getFriends() == null) {
+                user.setFriends(new ArrayList<>());
+            }
+            if (!user.getFriends().contains(friend.getId())) {
+                user.addFriend(friend.getId());
+                mongoTemplate.save(user); // Save the user with the updated friends list
+            }
+            // Add user to friend's friends list
+            if (friend.getFriends() == null) {
+                friend.setFriends(new ArrayList<>());
+            }
+            if (!friend.getFriends().contains(user.getId())) {
+                friend.addFriend(user.getId());
+                mongoTemplate.save(friend); // Save the friend with the updated friends list
+            }
         }
     }
 
@@ -65,14 +81,36 @@ public class UserService {
         User user = mongoTemplate.findOne(Query.query(Criteria.where("username").is(username)), User.class);
         User friend = mongoTemplate.findOne(Query.query(Criteria.where("username").is(friendUsername)), User.class);
 
-        if (user != null && friend != null && user.getFriends().contains(friend.getId())) {
-            user.removeFriend(friend.getId());
-            mongoTemplate.save(user);
+        if (user != null && friend != null) {
+            // Initialize friends list if it's null
+            if (user.getFriends() == null) {
+                user.setFriends(new ArrayList<>());
+            }
+            if (friend.getFriends() == null) {
+                friend.setFriends(new ArrayList<>());
+            }
+
+            if (user.getFriends().contains(friend.getId())) {
+                user.removeFriend(friend.getId());
+                mongoTemplate.save(user);
+            }
+            if (friend.getFriends().contains(user.getId())) {
+                friend.removeFriend(user.getId());
+                mongoTemplate.save(friend);
+            }
         }
+    }
+
+    public List<User> getFriends(List<String> friendIds) {
+        return mongoTemplate.find(Query.query(Criteria.where("id").in(friendIds)), User.class);
     }
 
     public List<User> searchUsers(String query) {
         Query searchQuery = Query.query(Criteria.where("username").regex(query, "i"));
         return mongoTemplate.find(searchQuery, User.class);
+    }
+
+    public User findByUsername(String username) {
+        return mongoTemplate.findOne(Query.query(Criteria.where("username").is(username)), User.class);
     }
 }

@@ -1,9 +1,11 @@
 package com.finalproject.finalproject.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -33,14 +35,32 @@ public class UserController {
 
     @PostMapping("/addFriend")
     public ResponseEntity<String> addFriend(@RequestParam String username, @RequestParam String friendUsername) {
-        userService.addFriend(username, friendUsername);
-        return ResponseEntity.ok("Friend added successfully");
+        try {
+            userService.addFriend(username, friendUsername);
+            return ResponseEntity.ok("Friend added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding friend: " + e.getMessage());
+        }
     }
 
     @PostMapping("/removeFriend")
     public ResponseEntity<String> removeFriend(@RequestParam String username, @RequestParam String friendUsername) {
         userService.removeFriend(username, friendUsername);
         return ResponseEntity.ok("Friend removed successfully");
+    }
+
+    @GetMapping("/{username}/friends")
+    public ResponseEntity<List<User>> getFriends(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        List<User> friends = userService
+                .getFriends(user.getFriends() != null ? user.getFriends() : Collections.emptyList());
+        return ResponseEntity.ok(friends);
     }
 
     @GetMapping("/search")
