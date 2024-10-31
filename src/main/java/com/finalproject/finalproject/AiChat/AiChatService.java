@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ChatService {
+public class AiChatService {
 
     @Value("${openai.api.url}")
     String apiUrl;
 
     private final RestTemplate restTemplate;
 
-    public ChatService(RestTemplate restTemplate) {
+    public AiChatService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

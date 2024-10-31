@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class AiChatController {
 
     @Autowired
-    private ChatService chatService;
+    private AiChatService chatService;
 
     @PostMapping("/chat")
     public CompletableFuture<String> postChat(@RequestBody String prompt) {
