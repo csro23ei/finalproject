@@ -16,6 +16,10 @@ public class StompController {
 
     @MessageMapping("/sendMessage")
     public void sendMessage(ChatMessage chatMessage, Principal user) {
-        messagingTemplate.convertAndSendToUser(chatMessage.getRecipientId(), "/queue/messages", chatMessage);
+        // Send message to user-specific queue
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getRecipientId(),
+                "/queue/messages",
+                chatMessage);
     }
 }
